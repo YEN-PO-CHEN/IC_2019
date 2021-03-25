@@ -1,0 +1,42 @@
+m255
+K3
+13
+cModel Technology
+dD:\2021\IC_2016
+vCONV
+V<<1M9RDf2BUaV[=_Clik31
+r1
+!s85 0
+31
+Iig8W^^gF4SlH;^@m1CW9e3
+Z0 dD:\2021\IC_2019
+w1616361681
+8D:/2021/IC_2019/CONV.v
+FD:/2021/IC_2019/CONV.v
+L0 4
+Z1 OL;L;10.1c;51
+Z2 o-work work -L mtiAvm -L mtiOvm -L mtiUvm -L mtiUPF
+n@c@o@n@v
+!s90 -reportprogress|300|-work|work|-vopt|D:/2021/IC_2019/CONV.v|
+!s100 NRmWLO?lM0Udc:]eAG5g02
+!s108 1616361684.744000
+!s107 D:/2021/IC_2019/CONV.v|
+!i10b 1
+vtestfixture
+VKBIIT=eCh7cJh[^JXBGX00
+r1
+31
+I>d^Me;J[NR:i2;O_]W8bK3
+Z3 dD:\2021\IC_2019
+w1616136677
+8D:/2021/IC_2019/testfixture.v
+FD:/2021/IC_2019/testfixture.v
+L0 11
+R1
+R2
+!s85 0
+!s100 D:;STkK[aE^XN6=CfCZ=O1
+!s90 -reportprogress|300|-work|work|-vopt|D:/2021/IC_2019/testfixture.v|
+!i10b 1
+!s108 1616361685.094000
+!s107 D:/2021/IC_2019/testfixture.v|

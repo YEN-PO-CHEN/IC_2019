@@ -1,0 +1,259 @@
+
+`timescale 1ns/10ps
+
+module  CONV(clk,reset,busy,ready,iaddr,idata,cwr,caddr_wr,cdata_wr,crd,caddr_rd,cdata_rd,csel);
+input	clk;
+input [19:0] cdata_rd;
+input	reset;
+input	ready;		
+input [19:0] idata;
+output	 cwr;
+output	[11:0] caddr_wr;
+output	[19:0] cdata_wr;	
+output	 crd;
+output	[11:0] caddr_rd;
+output	 busy;
+output	[2:0] csel;
+output [11:0] iaddr;
+reg cwr;
+reg	[11:0] caddr_wr;
+reg	[19:0] cdata_wr;	
+reg	 crd;
+reg	[11:0] caddr_rd;
+reg	 busy;
+reg	[2:0] csel;
+reg [11:0] iaddr;
+reg [19:0] Kernal [8:0];
+reg [3:0] CASE;//0-7
+reg [3:0] c16;
+reg [9:0] c1024;
+reg [19:0]MAP9[8:0];
+reg [11:0]ca_temp;
+reg Zero_pad [8:0];
+reg [35:0] ANS[9:0];
+reg bo;
+always @(posedge clk) begin
+	if(reset)begin
+		busy <= 0;
+		CASE <= 0;
+		cwr <= 0;
+		Kernal[0] <= 20'h0A89E;
+		Kernal[1] <= 20'h092D5;
+		Kernal[2] <= 20'h06D43;
+		Kernal[3] <= 20'h01004;
+		Kernal[4] <= 20'hF8F71;
+		Kernal[5] <= 20'hF6E54;
+		Kernal[6] <= 20'hFA6D7;
+		Kernal[7] <= 20'hFC834;
+		Kernal[8] <= 20'hFAC19;
+		Zero_pad[0] <= 1;
+		Zero_pad[1] <= 1;
+		Zero_pad[2] <= 1;
+		Zero_pad[3] <= 1;
+		Zero_pad[4] <= 1;
+		Zero_pad[5] <= 1;
+		Zero_pad[6] <= 1;
+		Zero_pad[7] <= 1;
+		Zero_pad[8] <= 1;
+		Zero_pad[9] <= 1;
+	end
+	else begin
+		case(CASE)
+			4'd0:begin
+				if(ready==1)begin
+					busy <= 1;
+				end
+				else if(busy == 1)begin
+					iaddr <= -65;
+					ca_temp <= 0;
+					CASE <= 1;
+					c16 <= 0;
+				end
+			end
+			4'd1:begin
+				MAP9[c16]<= idata;
+				cwr <=0;
+			  	if(c16 == 8)begin
+					CASE <= 2;
+					c16 <= 0;
+					if (ca_temp[11:6]==0) begin
+						Zero_pad[0] <= 0;
+						Zero_pad[1] <= 0;
+						Zero_pad[2] <= 0;
+					end
+					else if(ca_temp[11:6]==63)begin
+						Zero_pad[6] <= 0;
+						Zero_pad[7] <= 0;
+						Zero_pad[8] <= 0;
+					end
+					else begin end
+					if(ca_temp[5:0]==0)begin
+						Zero_pad[0] <= 0;
+						Zero_pad[3] <= 0;
+						Zero_pad[6] <= 0;
+					end
+					else if(ca_temp[5:0]==63)begin
+						Zero_pad[2] <= 0;
+						Zero_pad[5] <= 0;
+						Zero_pad[8] <= 0;
+					end
+					else begin end
+				end
+				else begin
+					c16 <= c16 + 1;
+					if(c16 == 2|c16==5) begin
+						iaddr <= iaddr + 62;
+					end
+					else begin
+						iaddr <= iaddr + 1;
+					end
+				end
+			end
+			4'd2:begin
+				if(cwr == 0) begin
+					if(Zero_pad[0]!=0)begin
+					ANS[0] <= Zero_pad[0] * (({ 16'd0, MAP9[0]} * { 16'd0, Kernal[0]}));
+					end 
+					else begin ANS[0] <= 0;end
+
+					if(Zero_pad[1]!=0)begin
+					ANS[1] <= Zero_pad[1] * (({ 16'd0, MAP9[1]} * { 16'd0, Kernal[1]}));
+					end else begin ANS[1] <= 0;end
+
+					if(Zero_pad[2]!=0)begin
+					ANS[2] <= Zero_pad[2] * (({ 16'd0, MAP9[2]} * { 16'd0, Kernal[2]}));
+					end else begin ANS[2] <= 0;end
+
+					if(Zero_pad[3]!=0)begin
+					ANS[3] <= Zero_pad[3] * (({ 16'd0, MAP9[3]} * { 16'd0, Kernal[3]}));
+					end else begin ANS[3] <= 0;end
+
+					ANS[4] <= Zero_pad[4] * (({ 16'd0, MAP9[4]} * { 16'd0, (~Kernal[4][19:0] + 1'b1) }));
+
+					if(Zero_pad[5]!=0)begin
+					ANS[5] <= Zero_pad[5] * (({ 16'd0, MAP9[5]} * { 16'd0, (~Kernal[5][19:0] + 1'b1) }));
+					end else begin ANS[5] <= 0;end
+
+					if(Zero_pad[6]!=0)begin
+					ANS[6] <= Zero_pad[6] * (({ 16'd0, MAP9[6]} * { 16'd0, (~Kernal[6][19:0] + 1'b1) }));
+					end else begin ANS[6] <= 0;end
+
+					if(Zero_pad[7]!=0)begin
+					ANS[7] <= Zero_pad[7] * (({ 16'd0, MAP9[7]} * { 16'd0, (~Kernal[7][19:0] + 1'b1) }));
+					end else begin ANS[7] <= 0;end
+
+					if(Zero_pad[8]!=0)begin
+					ANS[8] <= Zero_pad[8] * (({ 16'd0, MAP9[8]} * { 16'd0, (~Kernal[8][19:0] + 1'b1) }));
+					end else begin ANS[8] <= 0;end
+					Zero_pad[0] <= 1;
+					Zero_pad[1] <= 1;
+					Zero_pad[2] <= 1;
+					Zero_pad[3] <= 1;
+					Zero_pad[4] <= 1;
+					Zero_pad[5] <= 1;
+					Zero_pad[6] <= 1;
+					Zero_pad[7] <= 1;
+					Zero_pad[8] <= 1;
+					Zero_pad[9] <= 1;
+					cwr <= 1;
+				end
+				else begin
+					ANS[9] <= (ANS[0] + ANS[1] + ANS[2] + ANS[3] + (~ANS[4][35:0] + 1'b1) + (~ANS[5][35:0] + 1'b1)+ (~ANS[6][35:0] + 1'b1) + (~ANS[7][35:0] + 1'b1) + (~ANS[8][35:0] + 1'b1)+ {20'h01310,16'd0});
+					CASE <= 3;
+					bo <= 1;
+					csel <= 3'b001;
+				end
+			end
+			4'd3:begin
+				if(ca_temp ==4095)begin
+					CASE <= 4;
+					iaddr <= 'hx;
+					bo <= 1;
+				end
+				if(bo == 1) begin
+					caddr_wr <= ca_temp;
+					ca_temp <= ca_temp + 1;
+					if(ANS[9][35]==1) begin
+						cdata_wr <= 0;
+					end
+					else begin
+						if(ANS[9][15]==0)begin
+							cdata_wr <= ((ANS[9]) >> 16);
+						end
+						else begin
+							cdata_wr <= (((ANS[9]) >> 16) +1);
+						end
+					end
+					bo <= 0;
+				end
+				else begin
+					CASE <= 1;
+					iaddr <= iaddr - 129;
+					caddr_wr <= 'hx;
+					cdata_wr <= 'hx;
+					csel <= 3'b000;
+				end
+			end
+			4'd4:begin
+				CASE <= 5;
+				crd <= 1;
+				csel <= 3'b001;
+				caddr_rd <= 0;
+				c16 <= 0;
+				c1024 <= 0;
+			end
+			4'b5:begin
+				MAP9[c16]<= cdata_rd;
+				c16 <= c16 + 1;
+				if(c16 == 1) begin
+					caddr_rd <= caddr_rd + 63;
+				end
+				else if( c16 == 3)begin
+					CASE <= 6;
+					c16 <= 0;
+					bo <= 1;
+					if(caddr_rd[5:0] == 63)begin
+						caddr_rd <= caddr_rd + 1;
+					end
+					else begin
+						caddr_rd <= caddr_rd - 63;
+					end
+				end
+				else begin
+					caddr_rd <= caddr_rd + 1; 
+				end
+			end
+			4'b6:begin
+				if(bo==1)begin
+					crd <= 0;
+					cwr <= 1;
+					csel <= 3'b011;
+					bo <= 0;
+					MAP9[9] = MAP9[0];
+					if(MAP9[9] < MAP9[1])begin
+						MAP9[9]  = MAP9[1];
+					end 
+					if(MAP9[9]  < MAP9[2])begin
+						MAP9[9]  = MAP9[2];
+					end
+					if(MAP9[9] < MAP9[3])begin
+						MAP9[9] = MAP9[3];
+					end
+				end
+				else begin
+					cdata_wr <= MAP9[9];
+					caddr_wr <= c1024;
+					c1024 <= c1024 + 1;
+					CASE <= 5;
+					if(c1024 == 1023)begin
+						CASE <= 7;
+					end
+				end
+			end
+			4'd7:begin
+				busy <= 0;
+			end
+		endcase
+	end
+end
+endmodule
